@@ -2,9 +2,7 @@ window.onload = function() {
 
 	var gameContainer, canvasHeight, canvasWidth, camera, controls, scene, projector, renderer, objects = [], topTarget;
 
-	/*
-
-	*/
+	var cache;
 
 	setup('simple', .3);
 
@@ -38,10 +36,6 @@ window.onload = function() {
 		renderer = new THREE.WebGLRenderer({antialias: true});
 		renderer.setSize(window.innerWidth, window.innerHeight);
 
-		renderer.shadowMapEnabled = true;
-		renderer.shadowMapType = THREE.PCFShadowMap;
-		renderer.shadowMapSoft = true;
-
 		gameContainer.appendChild(renderer.domElement);
 
 		var canvas = renderer.domElement;
@@ -57,21 +51,13 @@ window.onload = function() {
 
 		var simpleSpotLight = new THREE.SpotLight(aspecColor, .5, 1.5, Math.PI/6, 1);
 		simpleSpotLight.position.set(0, 0, 1);
-		simpleSpotLight.castShadow = true;
-		simpleSpotLight.shadowCameraNear = 5;
-		simpleSpotLight.shadowCameraFar = camera.far;
-		simpleSpotLight.shadowCameraFov = 10;
-		simpleSpotLight.shadowBias = -0.00022;
-		simpleSpotLight.shadowDarkness = 0.5;
-		simpleSpotLight.shadowMapWidth = 2048;
-		simpleSpotLight.shadowMapHeight = 2048;
 
 		var simpleLight = new THREE.PointLight(0x7f7701, .25, 1);
 		simpleLight.position.set(0, 0, .5);
 
 		var sphereSize = .1;
-		var PointLightHelper = new THREE.PointLightHelper(simpleLight,sphereSize);	
-		var SpotLightHelper = new THREE.SpotLightHelper(simpleSpotLight,sphereSize);
+		var PointLightHelper = new THREE.PointLightHelper(simpleLight, sphereSize);	
+		var SpotLightHelper = new THREE.SpotLightHelper(simpleSpotLight, sphereSize);
 
 		// Materials
 
@@ -118,8 +104,6 @@ window.onload = function() {
 			loader.load(geometryAddress, function(boardGeometry) {
 
 				board = new THREE.Mesh(boardGeometry, material);
-				board.receiveShadow = true;
-				board.castShadow = true;
 				board.id = id;
 				board.name = boardName;
 
@@ -138,10 +122,10 @@ window.onload = function() {
 				button.position.x = positionX;
 				button.position.y = positionY;
 				button.position.z = positionZ;
-				button.receiveShadow = true;
-				button.castShadow = true;
 				button.id = id;
 				button.name = buttonName;
+
+				button.dynamic = true
 
 				scene.add(button);
 				objects.push(button)
@@ -153,21 +137,19 @@ window.onload = function() {
 			var facesWide = 1;
 			var facesDeep = 5;
 
-			this.section = new THREE.Mesh(new THREE.PlaneGeometry(width, depth, facesWide, facesDeep), materials.gridMat);
+			column = new THREE.Mesh(new THREE.PlaneGeometry(width, depth, facesWide, facesDeep), materials.gridMat);
 
-			this.section.position.x = posX;
-			this.section.position.y = posY;
-			this.section.position.z = elevation;
+			column.position.x = posX;
+			column.position.y = posY;
+			column.position.z = elevation;
 
-			this.section.id = gridId;
-			this.section.name = sectionName;
+			column.id = gridId;
+			column.name = sectionName;
 
-			this.section.visible = true;
+			column.visible = true;
 
-			scene.add(this.section);
-			objects.push(this.section);
-
-			console.log(this.section);
+			scene.add(column);
+			objects.push(column);
 		}
 
 		// Utility functions
@@ -202,18 +184,18 @@ window.onload = function() {
 
 			while (buttonCount--) {
 
-				new Button('lb', 'js/simpleButtonGeometry.js', materials.simpleLightButtonMat, makeButtonRow(.2793), -.26, .005, 'lightButton-' + (buttonCount + 1));
-				new Button('db', 'js/simpleButtonGeometry.js', materials.simpleDarkButtonMat, makeButtonRow(.2793), .26, .005, 'darkButton-' + (buttonCount + 1));
+				new Button('button', 'js/simpleButtonGeometry.js', materials.simpleLightButtonMat, makeButtonRow(.2793), -.26, .005, 'lightButton-' + (buttonCount + 1));
+				new Button('button', 'js/simpleButtonGeometry.js', materials.simpleDarkButtonMat, makeButtonRow(.2793), .26, .005, 'darkButton-' + (buttonCount + 1));
 			}
 
 			var columnCount = 6;
 
 			while (columnCount--) {
 
-				new gridColumn(.036, .185, .216 - columnCount / 26.5, -.122, .0055, 'homePlayer1', 'column-' + (columnCount + 1));
-				new gridColumn(.036, .185, -.029 - columnCount / 26.5, -.122, .0055, 'outerPlayer1', 'column-' + (columnCount + 7));
-				new gridColumn(.036, .185, -.2175 + columnCount / 26.5, .122, .0055, 'outerPlayer2', 'column-' + (columnCount + 13));
-				new gridColumn(.036, .185, .0273 + columnCount / 26.5, .122, .0055, 'homePlayer2', 'column-' + (columnCount + 19));
+				new gridColumn(.036, .185, .216 - columnCount / 26.5, -.122, .0055, 'grid', 'column-' + (columnCount + 1));
+				new gridColumn(.036, .185, -.029 - columnCount / 26.5, -.122, .0055, 'grid', 'column-' + (columnCount + 7));
+				new gridColumn(.036, .185, -.2175 + columnCount / 26.5, .122, .0055, 'grid', 'column-' + (columnCount + 13));
+				new gridColumn(.036, .185, .0273 + columnCount / 26.5, .122, .0055, 'grid', 'column-' + (columnCount + 19));
 			}
 		}
 	}
@@ -245,39 +227,35 @@ window.onload = function() {
 
 		if (intersects.length > 0) {
 
-			console.log(topTarget.object);
-
-			if (topTarget.object.id == 'lb') {
-
-				controls.enabled = false;
-			}
-
-			if ( topTarget.object.id == 'db') {
-
-				controls.enabled = false;
-			}
-
-			if (topTarget.object.id == 'grid') {
-
-				controls.enabled = false;
-			}
+			moveButton();
 		}
 	}
 
 	function mouseRelease(event) {
 
 		event.preventDefault();
-
-		controls.enabled = true;
 	}
 
-	document.addEventListener('mousedown', castMouseRay, false);
+	document.addEventListener('click', castMouseRay, false);
 	document.addEventListener('mouseup', mouseRelease, false);
 	window.addEventListener('resize', onWindowResize, false);
 
-	// Render
+	//
 
-	console.log(objects);
+	function moveButton() {
+
+		if (topTarget.object.id == 'button') {
+
+			cache = topTarget;
+		}
+
+		if (topTarget.object.id == 'grid') {
+
+			cache.object.position.copy(topTarget.point);
+		}
+	}
+
+	// Render
 
 	render();
 
