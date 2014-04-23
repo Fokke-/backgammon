@@ -125,8 +125,6 @@ window.onload = function() {
 				button.id = id;
 				button.name = buttonName;
 
-				button.dynamic = true
-
 				scene.add(button);
 				objects.push(button)
 			});
