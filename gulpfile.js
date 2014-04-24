@@ -34,6 +34,7 @@ gulp.task('js_bottom', function() {
     gulp.src([
         tplDir + 'js/src/three.js',
         tplDir + 'js/src/OrbitControls.js',
+        tplDir + 'js/src/Tween.js',
         tplDir + 'js/src/main.js',
     ])
     .pipe(concat('js_bottom.js'))
