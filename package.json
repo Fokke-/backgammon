@@ -1,0 +1,25 @@
+{
+  "name": "artoforsblom.fi",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.6.0",
+    "gulp-autoprefixer": "0.0.6",
+    "gulp-clean": "^0.2.4",
+    "gulp-concat": "^2.1.7",
+    "gulp-imagemin": "^0.1.5",
+    "gulp-jshint": "^1.5.1",
+    "gulp-minify-css": "^0.3.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^0.7.1",
+    "gulp-uglify": "^0.2.1",
+    "gulp-watch": "^0.5.2",
+    "rsyncwrapper": "^0.3.0"
+  }
+}

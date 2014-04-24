@@ -56,7 +56,7 @@ window.onload = function() {
 		simpleLight.position.set(0, 0, .5);
 
 		var sphereSize = .1;
-		var PointLightHelper = new THREE.PointLightHelper(simpleLight, sphereSize);	
+		var PointLightHelper = new THREE.PointLightHelper(simpleLight, sphereSize);
 		var SpotLightHelper = new THREE.SpotLightHelper(simpleSpotLight, sphereSize);
 
 		// Materials
@@ -176,14 +176,14 @@ window.onload = function() {
 				scene.add(simpleLightingSetup[i]);
 			}
 
- 			new Board('board', 'js/simpleBoardGeometry.js', materials.simpleBoardMat, 'simpleBoard');
+ 			new Board('board', 'js/geometry/simpleBoardGeometry.js', materials.simpleBoardMat, 'simpleBoard');
 
  			var buttonCount = 15;
 
 			while (buttonCount--) {
 
-				new Button('button', 'js/simpleButtonGeometry.js', materials.simpleLightButtonMat, makeButtonRow(.2793), -.26, .005, 'lightButton-' + (buttonCount + 1));
-				new Button('button', 'js/simpleButtonGeometry.js', materials.simpleDarkButtonMat, makeButtonRow(.2793), .26, .005, 'darkButton-' + (buttonCount + 1));
+				new Button('button', 'js/geometry/simpleButtonGeometry.js', materials.simpleLightButtonMat, makeButtonRow(.2793), -.26, .005, 'lightButton-' + (buttonCount + 1));
+				new Button('button', 'js/geometry/simpleButtonGeometry.js', materials.simpleDarkButtonMat, makeButtonRow(.2793), .26, .005, 'darkButton-' + (buttonCount + 1));
 			}
 
 			var columnCount = 6;
